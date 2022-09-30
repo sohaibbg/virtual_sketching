@@ -13,20 +13,20 @@ import matplotlib.pyplot as plt
 
 def reset_graph():
     """Closes the current default session and resets the graph."""
-    sess = tf.get_default_session()
+    sess = tf.compat.v1.get_default_session()
     if sess:
         sess.close()
-    tf.reset_default_graph()
+    tf.compat.v1.reset_default_graph()
 
 
 def load_checkpoint(sess, checkpoint_path, ras_only=False, perceptual_only=False, gen_model_pretrain=False,
                     train_entire=False):
     if ras_only:
-        load_var = {var.op.name: var for var in tf.global_variables() if 'raster_unit' in var.op.name}
+        load_var = {var.op.name: var for var in tf.compat.v1.global_variables() if 'raster_unit' in var.op.name}
     elif perceptual_only:
-        load_var = {var.op.name: var for var in tf.global_variables() if 'VGG16' in var.op.name}
+        load_var = {var.op.name: var for var in tf.compat.v1.global_variables() if 'VGG16' in var.op.name}
     elif train_entire:
-        load_var = {var.op.name: var for var in tf.global_variables()
+        load_var = {var.op.name: var for var in tf.compat.v1.global_variables()
                     if 'discriminator' not in var.op.name
                     and 'raster_unit' not in var.op.name
                     and 'VGG16' not in var.op.name
@@ -37,7 +37,7 @@ def load_checkpoint(sess, checkpoint_path, ras_only=False, perceptual_only=False
                     }
     else:
         if gen_model_pretrain:
-            load_var = {var.op.name: var for var in tf.global_variables()
+            load_var = {var.op.name: var for var in tf.compat.v1.global_variables()
                         if 'discriminator' not in var.op.name
                         and 'raster_unit' not in var.op.name
                         and 'VGG16' not in var.op.name
@@ -46,9 +46,9 @@ def load_checkpoint(sess, checkpoint_path, ras_only=False, perceptual_only=False
                         # and 'global_step' not in var.op.name
                         }
         else:
-            load_var = tf.global_variables()
+            load_var = tf.compat.v1.global_variables()
 
-    restorer = tf.train.Saver(load_var)
+    restorer = tf.compat.v1.train.Saver(load_var)
     if not ras_only:
         ckpt = tf.train.get_checkpoint_state(checkpoint_path)
         model_checkpoint_path = ckpt.model_checkpoint_path
@@ -64,7 +64,7 @@ def load_checkpoint(sess, checkpoint_path, ras_only=False, perceptual_only=False
 def create_summary(summary_writer, summ_map, step):
     for summ_key in summ_map:
         summ_value = summ_map[summ_key]
-        summ = tf.summary.Summary()
+        summ = tf.compat.v1.summary.Summary()
         summ.value.add(tag=summ_key, simple_value=float(summ_value))
         summary_writer.add_summary(summ, step)
     summary_writer.flush()
@@ -361,7 +361,7 @@ def draw_strokes(data, save_root, save_filename, input_img, image_size, init_cur
 
 
 def update_hyperparams(model_params, model_base_dir, model_name, infer_dataset):
-    with tf.gfile.Open(os.path.join(model_base_dir, model_name, 'model_config.json'), 'r') as f:
+    with tf.io.gfile.GFile(os.path.join(model_base_dir, model_name, 'model_config.json'), 'r') as f:
         data = json.load(f)
 
     ignored_keys = ['image_size_small', 'image_size_large', 'z_size', 'raster_perc_loss_layer', 'raster_loss_wk',

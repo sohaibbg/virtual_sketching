@@ -13,7 +13,7 @@ from dataset_utils import load_dataset_training
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0, 1'
 
-tf.logging.set_verbosity(tf.logging.INFO)
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.INFO)
 
 
 def should_save_log_img(step_):
@@ -86,12 +86,12 @@ def save_log_images(sess, model, data_set, save_root, step_num, save_num=10):
 
 def train(sess, train_model, eval_sample_model, train_set, val_set, sub_log_root, sub_snapshot_root, sub_log_img_root):
     # Setup summary writer.
-    summary_writer = tf.summary.FileWriter(sub_log_root)
+    summary_writer = tf.compat.v1.summary.FileWriter(sub_log_root)
 
     print('-' * 100)
 
     # Calculate trainable params.
-    t_vars = tf.trainable_variables()
+    t_vars = tf.compat.v1.trainable_variables()
     count_t_vars = 0
     for var in t_vars:
         num_param = np.prod(var.get_shape().as_list())
@@ -106,9 +106,9 @@ def train(sess, train_model, eval_sample_model, train_set, val_set, sub_log_root
     start = time.time()
 
     # create saver
-    snapshot_save_vars = [var for var in tf.global_variables()
+    snapshot_save_vars = [var for var in tf.compat.v1.global_variables()
                           if 'raster_unit' not in var.op.name and 'VGG16' not in var.op.name]
-    saver = tf.train.Saver(var_list=snapshot_save_vars, max_to_keep=20)
+    saver = tf.compat.v1.train.Saver(var_list=snapshot_save_vars, max_to_keep=20)
 
     start_step = 1
     print('start_step', start_step)
@@ -247,7 +247,7 @@ def train(sess, train_model, eval_sample_model, train_set, val_set, sub_log_root
                              time_taken)
             output_log = output_format % output_values
             # print(output_log)
-            tf.logging.info(output_log)
+            tf.compat.v1.logging.info(output_log)
             start = time.time()
 
         if should_save_log_img(step) and step > 0:
@@ -284,10 +284,10 @@ def trainer(model_params):
     train_model = sketch_vector_model.VirtualSketchingModel(train_model_params)
     eval_sample_model = sketch_vector_model.VirtualSketchingModel(eval_sample_model_params, reuse=True)
 
-    tfconfig = tf.ConfigProto(allow_soft_placement=True)
+    tfconfig = tf.compat.v1.ConfigProto(allow_soft_placement=True)
     tfconfig.gpu_options.allow_growth = True
-    sess = tf.InteractiveSession(config=tfconfig)
-    sess.run(tf.global_variables_initializer())
+    sess = tf.compat.v1.InteractiveSession(config=tfconfig)
+    sess.run(tf.compat.v1.global_variables_initializer())
 
     load_checkpoint(sess, FLAGS.neural_renderer_path, ras_only=True)
     if train_model_params.raster_loss_base_type == 'perceptual':
@@ -297,7 +297,7 @@ def trainer(model_params):
     os.makedirs(sub_log_root, exist_ok=True)
     os.makedirs(sub_log_img_root, exist_ok=True)
     os.makedirs(sub_snapshot_root, exist_ok=True)
-    with tf.gfile.Open(os.path.join(sub_snapshot_root, 'model_config.json'), 'w') as f:
+    with tf.io.gfile.GFile(os.path.join(sub_snapshot_root, 'model_config.json'), 'w') as f:
         json.dump(train_model_params.values(), f, indent=True)
 
     train(sess, train_model, eval_sample_model, train_set, val_set,
