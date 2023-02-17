@@ -5,33 +5,33 @@ import tensorflow as tf
 # Common parameters
 #############################################
 
-FLAGS = tf.app.flags.FLAGS
+FLAGS = tf.compat.v1.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string(
+tf.compat.v1.app.flags.DEFINE_string(
     'dataset_dir',
     'datasets',
     'The directory of sketch data of the dataset.')
-tf.app.flags.DEFINE_string(
+tf.compat.v1.app.flags.DEFINE_string(
     'log_root',
     'outputs/log',
     'Directory to store tensorboard.')
-tf.app.flags.DEFINE_string(
+tf.compat.v1.app.flags.DEFINE_string(
     'log_img_root',
     'outputs/log_img',
     'Directory to store intermediate output images.')
-tf.app.flags.DEFINE_string(
+tf.compat.v1.app.flags.DEFINE_string(
     'snapshot_root',
     'outputs/snapshot',
     'Directory to store model checkpoints.')
-tf.app.flags.DEFINE_string(
+tf.compat.v1.app.flags.DEFINE_string(
     'neural_renderer_path',
     'outputs/snapshot/pretrain_neural_renderer/renderer_300000.tfmodel',
     'Path to the neural renderer model.')
-tf.app.flags.DEFINE_string(
+tf.compat.v1.app.flags.DEFINE_string(
     'perceptual_model_root',
     'outputs/snapshot/pretrain_perceptual_model',
     'Directory to store perceptual model.')
-tf.app.flags.DEFINE_string(
+tf.compat.v1.app.flags.DEFINE_string(
     'data',
     '',
     'The dataset type.')

@@ -319,10 +319,10 @@ def main_testing(test_image_base_dir, test_dataset, test_image_name,
     # differentiable pasting graph
     paste_v3_func = DiffPastingV3(sample_hps_model.raster_size)
 
-    tfconfig = tf.ConfigProto()
+    tfconfig = tf.compat.v1.ConfigProto()
     tfconfig.gpu_options.allow_growth = True
-    sess = tf.InteractiveSession(config=tfconfig)
-    sess.run(tf.global_variables_initializer())
+    sess = tf.compat.v1.InteractiveSession(config=tfconfig)
+    sess.run(tf.compat.v1.global_variables_initializer())
 
     # loads the weights from checkpoint into our model
     snapshot_step = load_checkpoint(sess, model_dir, gen_model_pretrain=True)

@@ -9,7 +9,7 @@ class RasterUnit(object):
         self.raster_size = raster_size
         self.input_params = input_params
 
-        with tf.variable_scope("raster_unit", reuse=reuse):
+        with tf.compat.v1.variable_scope("raster_unit", reuse=reuse):
             self.build_unit()
 
     def build_unit(self):
@@ -23,7 +23,7 @@ class RasterUnit(object):
         x = self.fully_connected(x, 2048, 4096, scope='fc4')  # (N, 4096)
         x = tf.nn.relu(x)
         x = tf.reshape(x, (-1, 16, 16, 16))  # (N, 16, 16, 16)
-        x = tf.transpose(x, (0, 2, 3, 1))
+        x = tf.transpose(a=x, perm=(0, 2, 3, 1))
 
         x = self.conv2d(x, 32, 3, 1, scope='conv1')  # (N, 16, 16, 32)
         x = tf.nn.relu(x)
@@ -45,18 +45,18 @@ class RasterUnit(object):
         self.stroke_image = 1.0 - tf.reshape(x, (-1, self.raster_size, self.raster_size))
 
     def conv2d(self, input_tensor, out_channels, kernel_size, stride, scope, reuse=False):
-        with tf.variable_scope(scope, reuse=reuse):
-            output_tensor = tf.layers.conv2d(input_tensor, out_channels, kernel_size=kernel_size,
+        with tf.compat.v1.variable_scope(scope, reuse=reuse):
+            output_tensor = tf.compat.v1.layers.conv2d(input_tensor, out_channels, kernel_size=kernel_size,
                                              strides=(stride, stride),
-                                             padding="same", kernel_initializer=tf.keras.initializers.he_normal())
+                                             padding="same", kernel_initializer=tf.compat.v1.keras.initializers.he_normal())
             return output_tensor
 
     def fully_connected(self, input_tensor, in_dim, out_dim, scope, reuse=False):
-        with tf.variable_scope(scope, reuse=reuse):
-            weight = tf.get_variable("weight", [in_dim, out_dim], dtype=tf.float32,
-                                     initializer=tf.random_normal_initializer())
-            bias = tf.get_variable("bias", [out_dim], dtype=tf.float32,
-                                   initializer=tf.random_normal_initializer())
+        with tf.compat.v1.variable_scope(scope, reuse=reuse):
+            weight = tf.compat.v1.get_variable("weight", [in_dim, out_dim], dtype=tf.float32,
+                                     initializer=tf.compat.v1.random_normal_initializer())
+            bias = tf.compat.v1.get_variable("bias", [out_dim], dtype=tf.float32,
+                                   initializer=tf.compat.v1.random_normal_initializer())
             output_tensor = tf.matmul(input_tensor, weight) + bias
             return output_tensor
 
@@ -64,9 +64,9 @@ class RasterUnit(object):
         params_shape = input_tensor.get_shape()
         n, h, w, c = params_shape
         input_tensor_proc = tf.reshape(input_tensor, (n, h, w, c // 4, 4))
-        input_tensor_proc = tf.transpose(input_tensor_proc, (0, 1, 2, 4, 3))
+        input_tensor_proc = tf.transpose(a=input_tensor_proc, perm=(0, 1, 2, 4, 3))
         input_tensor_proc = tf.reshape(input_tensor_proc, (n, h, w, -1))
-        output_tensor = tf.depth_to_space(input_tensor_proc, block_size=upscale_factor)
+        output_tensor = tf.compat.v1.depth_to_space(input=input_tensor_proc, block_size=upscale_factor)
         return output_tensor
 
 
@@ -93,18 +93,18 @@ class NeuralRasterizor(object):
         """
         seq_len = raster_seq_len if raster_seq_len is not None else self.seq_len
 
-        raster_params = tf.transpose(input_data, [1, 0, 2])  # (seq_len, N, 10)
+        raster_params = tf.transpose(a=input_data, perm=[1, 0, 2])  # (seq_len, N, 10)
 
         seq_stroke_images = tf.map_fn(self.stroke_drawer_with_raster_unit, raster_params,
                                       parallel_iterations=32)  # (seq_len, N, raster_size, raster_size)
-        seq_stroke_images = tf.transpose(seq_stroke_images, [1, 2, 3, 0])
+        seq_stroke_images = tf.transpose(a=seq_stroke_images, perm=[1, 2, 3, 0])
         # (N, raster_size, raster_size, seq_len), [0.0-stroke, 1.0-BG]
 
         filter_seq_stroke_images = 1.0 - seq_stroke_images
         # (N, raster_size, raster_size, seq_len), [0.0-BG, 1.0-stroke]
 
         # stacking
-        stroke_images_unclip = tf.reduce_sum(filter_seq_stroke_images, axis=-1)  # (N, raster_size, raster_size)
+        stroke_images_unclip = tf.reduce_sum(input_tensor=filter_seq_stroke_images, axis=-1)  # (N, raster_size, raster_size)
         stroke_images = tf.clip_by_value(stroke_images_unclip, 0.0, 1.0)  # [0.0-BG, 1.0-stroke]
         return stroke_images, stroke_images_unclip, seq_stroke_images
 
@@ -117,7 +117,7 @@ class NeuralRasterizor(object):
         raster_unit = RasterUnit(
             raster_size=self.raster_size,
             input_params=params_batch,
-            reuse=tf.AUTO_REUSE
+            reuse=tf.compat.v1.AUTO_REUSE
         )
         stroke_image = raster_unit.stroke_image  # (N, raster_size, raster_size), [0.0-stroke, 1.0-BG]
         return stroke_image
@@ -165,7 +165,7 @@ class NeuralRasterizorStep(object):
         raster_unit = RasterUnit(
             raster_size=self.raster_size,
             input_params=params_batch,
-            reuse=tf.AUTO_REUSE
+            reuse=tf.compat.v1.AUTO_REUSE
         )
         stroke_image = raster_unit.stroke_image  # (N, raster_size, raster_size), [0.0-stroke, 1.0-BG]
         return stroke_image

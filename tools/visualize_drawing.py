@@ -189,10 +189,10 @@ def visualize_drawing(npz_path):
     # differentiable pasting graph
     paste_v3_func = DiffPastingV3(raster_size)
 
-    tfconfig = tf.ConfigProto()
+    tfconfig = tf.compat.v1.ConfigProto()
     tfconfig.gpu_options.allow_growth = True
-    sess = tf.InteractiveSession(config=tfconfig)
-    sess.run(tf.global_variables_initializer())
+    sess = tf.compat.v1.InteractiveSession(config=tfconfig)
+    sess.run(tf.compat.v1.global_variables_initializer())
 
     data = np.load(npz_path, encoding='latin1', allow_pickle=True)
     strokes_data = data['strokes_data']
