@@ -12,6 +12,7 @@ from utils import reset_graph, load_checkpoint, update_hyperparams, draw, \
 from dataset_utils import load_dataset_testing
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+tf.compat.v1.disable_eager_execution()
 
 
 def move_cursor_to_undrawn(current_pos_list, input_image_, patch_size,
