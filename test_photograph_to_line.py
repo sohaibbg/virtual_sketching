@@ -12,6 +12,7 @@ from utils import reset_graph, load_checkpoint, update_hyperparams, draw, \
 from dataset_utils import load_dataset_testing
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+tf.compat.v1.disable_eager_execution()
 
 
 def sample(sess, model, input_photos, init_cursor, image_size, init_len, seq_len, state_dependent,
