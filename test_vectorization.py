@@ -162,6 +162,7 @@ def sample(sess, model, input_photos, init_cursor, image_size, init_len, seq_len
     initial_state = sess.run(model.initial_state)
     prev_width = np.stack([model.hps.min_width for _ in range(select_times)], axis=0)
 
+    # config initialization
     params_list = [[] for _ in range(select_times)]
     state_raw_list = [[] for _ in range(select_times)]
     state_soft_list = [[] for _ in range(select_times)]
@@ -174,9 +175,11 @@ def sample(sess, model, input_photos, init_cursor, image_size, init_len, seq_len
 
     input_photos_tiles = np.tile(input_photos, (select_times, 1, 1))
 
+    # runs model over image
     for cursor_i, seq_len in enumerate(seq_lens):
         # print('\n')
         # print('@@ Round', cursor_i + 1)
+        # position cursor
         if cursor_i == 0:
             cursor_pos = np.squeeze(init_cursor, axis=0)  # (select_times, 1, 2)
         else:
@@ -346,7 +349,7 @@ def main_testing(test_image_base_dir, test_dataset, test_image_name,
         # init_cursors: (1, 1, 2), in size [0.0, 1.0)
 
         print()
-        print(test_image_name, ', image_size:', test_image_size, ', sampling_i:', sampling_i)
+        # print(test_image_name, ', image_size:', test_image_size, ', sampling_i:', sampling_i)
         print('Processing ...')
 
         if init_cursors.ndim == 3:
@@ -431,7 +434,11 @@ def main_testing(test_image_base_dir, test_dataset, test_image_name,
     print('  >>> average_compute_time', average_compute_time)
 
 
-def main(model_name, test_image_name, sampling_num):
+def main(test_image_name):
+    # earlier taken from argument, now a default
+    model_name = 'pretrain_clean_line_drawings'
+    # earlier taken from argument, now a default
+    sampling_num = 1
     test_dataset = 'clean_line_drawings'
     test_image_base_dir = 'sample_inputs'
 
@@ -467,4 +474,4 @@ if __name__ == '__main__':
     assert args.input != ''
     assert args.sample > 0
 
-    main(args.model, args.input, args.sample)
+    main(args.input)

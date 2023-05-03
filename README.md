@@ -1,3 +1,50 @@
+IBA FYP USE STARTS
+
+How to use:
+##### 1. Run the following commands
+###### download the old version of conda for compatibility
+wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.12.0-Linux-x86_64.sh
+###### set permissions
+chmod +x Miniconda3-py38_4.12.0-Linux-x86_64.sh
+###### installation
+./Miniconda3-py38_4.12.0-Linux-x86_64.sh -b -f -p /usr/local
+conda update conda
+conda create -n myenv python=3.6
+###### enable access to conda packages
+python import sys
+python sys.path.append('/usr/local/lib/python3.8/site-packages')
+###### install dependencies
+conda activate myenv
+pip install tensorflow==1.15
+pip install ipykernel utils matplotlib opencv-python==3.4.2.17 pillow==6.2.0 scipy==1.5.2 gizeh==0.1.11
+##### 2. Download and extract the model
+###### download the following file
+https://drive.google.com/file/d/1QotAuGFxDJ9eisxacg5-cJSf4oXP2C-q/view?usp=sharing
+###### extract it
+virtual_sketching/outputs/snapshot/pretrain_clean_line_drawings
+Extraction should be such that "pretrain_clean_line_drawings" will contain 4 files
+##### 3. Start the server
+python app.py
+
+How does it work?
+1. An image is received via api
+2. it is saved in outputs/sampling/clean_line_drawings__pretrain_clean_line_drawings as ${filename}_input.png
+3. A numpy array file is created as the result in outputs/sampling/clean_line_drawings__pretrain_clean_line_drawings/seq_data as ${filename}_0.npz
+4. An svg file is created as the result in outputs/sampling/clean_line_drawings__pretrain_clean_line_drawings/seq_data/${filename}_0/single.svg
+5. This file is read and its contents are sent as string as response of the api
+
+TODO:
+1. use bytes directly instead of saving file first
+2. don't save files in outputs
+3. send numpy array directly instead of svg content
+4. update dependencies
+5. auto-restart on error
+6. containerize
+7. tensorflow optimization
+
+IBA FYP USE ENDS
+---------------------------------
+
 # General Virtual Sketching Framework for Vector Line Art - SIGGRAPH 2021
 
 [[Paper]](https://esslab.jp/publications/HaoranSIGRAPH2021.pdf) | [[Project Page]](https://markmohr.github.io/virtual_sketching/) | [[中文Readme]](/README_CN.md) | [[中文论文介绍]](https://blog.csdn.net/qq_33000225/article/details/118883153)
