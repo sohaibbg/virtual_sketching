@@ -4,59 +4,59 @@ import numpy as np
 from xml.dom import minidom
 
 
-def write_svg_1(path_list, img_size, save_path):
-    ''' A long curve consisting of several strokes forms a path. '''
-    impl = minidom.getDOMImplementation()
+# def write_svg_1(path_list, img_size, save_path):
+#     ''' A long curve consisting of several strokes forms a path. '''
+#     impl = minidom.getDOMImplementation()
 
-    doc = impl.createDocument(None, None, None)
+#     doc = impl.createDocument(None, None, None)
 
-    rootElement = doc.createElement('svg')
-    rootElement.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
-    rootElement.setAttribute('height', str(img_size))
-    rootElement.setAttribute('width', str(img_size))
+#     rootElement = doc.createElement('svg')
+#     rootElement.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+#     rootElement.setAttribute('height', str(img_size))
+#     rootElement.setAttribute('width', str(img_size))
 
-    path_num = len(path_list)
-    for path_i in range(path_num):
-        path_items = path_list[path_i]
+#     path_num = len(path_list)
+#     for path_i in range(path_num):
+#         path_items = path_list[path_i]
 
-        assert len(path_items) > 0
-        if len(path_items) == 1:
-            continue
+#         assert len(path_items) > 0
+#         if len(path_items) == 1:
+#             continue
 
-        childElement = doc.createElement('path')
-        childElement.setAttribute('id', 'curve_' + str(path_i))
-        childElement.setAttribute('stroke', '#000000')
-        childElement.setAttribute('stroke-width', '3.5')
-        childElement.setAttribute('stroke-linejoin', 'round')
-        childElement.setAttribute('stroke-linecap', 'round')
-        childElement.setAttribute('fill', 'none')
+#         childElement = doc.createElement('path')
+#         childElement.setAttribute('id', 'curve_' + str(path_i))
+#         childElement.setAttribute('stroke', '#000000')
+#         childElement.setAttribute('stroke-width', '3.5')
+#         childElement.setAttribute('stroke-linejoin', 'round')
+#         childElement.setAttribute('stroke-linecap', 'round')
+#         childElement.setAttribute('fill', 'none')
 
-        command_str = ''
-        for stroke_i, stroke_item in enumerate(path_items):
-            if stroke_i == 0:
-                command_str += 'M '
-                stroke_position = stroke_item[0]
-                command_str += str(stroke_position[0]) + ', ' + str(stroke_position[1]) + ' '
-            else:
-                command_str += 'Q '
-                ctrl_position, stroke_position, stroke_width = stroke_item[0], stroke_item[1], stroke_item[2]
+#         command_str = ''
+#         for stroke_i, stroke_item in enumerate(path_items):
+#             if stroke_i == 0:
+#                 command_str += 'M '
+#                 stroke_position = stroke_item[0]
+#                 command_str += str(stroke_position[0]) + ', ' + str(stroke_position[1]) + ' '
+#             else:
+#                 command_str += 'Q '
+#                 ctrl_position, stroke_position, stroke_width = stroke_item[0], stroke_item[1], stroke_item[2]
 
-                ctrl_position_0 = last_position[0] + (stroke_position[0] - last_position[0]) * ctrl_position[1]
-                ctrl_position_1 = last_position[1] + (stroke_position[1] - last_position[1]) * ctrl_position[0]
+#                 ctrl_position_0 = last_position[0] + (stroke_position[0] - last_position[0]) * ctrl_position[1]
+#                 ctrl_position_1 = last_position[1] + (stroke_position[1] - last_position[1]) * ctrl_position[0]
 
-                command_str += str(ctrl_position_0) + ', ' + str(ctrl_position_1) + ', ' + \
-                               str(stroke_position[0]) + ', ' + str(stroke_position[1]) + ' '
+#                 command_str += str(ctrl_position_0) + ', ' + str(ctrl_position_1) + ', ' + \
+#                                str(stroke_position[0]) + ', ' + str(stroke_position[1]) + ' '
 
-            last_position = stroke_position
+#             last_position = stroke_position
 
-        childElement.setAttribute('d', command_str)
-        rootElement.appendChild(childElement)
+#         childElement.setAttribute('d', command_str)
+#         rootElement.appendChild(childElement)
 
-    doc.appendChild(rootElement)
+#     doc.appendChild(rootElement)
 
-    f = open(save_path, 'w')
-    doc.writexml(f, addindent='  ', newl='\n')
-    f.close()
+#     f = open(save_path, 'w')
+#     doc.writexml(f, addindent='  ', newl='\n')
+#     f.close()
 
 
 def write_svg_2(path_list, img_size, save_path):
@@ -187,10 +187,10 @@ def convert_strokes_to_svg(data, init_cursor, image_size, infer_lengths, init_wi
 
     absolute_strokes.append(absolute_strokes_path)
 
-    if svg_type == 'cluster':
-        write_svg_1(absolute_strokes, image_size, save_path)
-    elif svg_type == 'single':
-        write_svg_2(absolute_strokes, image_size, save_path)
+    # if svg_type == 'cluster':
+    #     write_svg_1(absolute_strokes, image_size, save_path)
+    # elif svg_type == 'single':
+    write_svg_2(absolute_strokes, image_size, save_path)
     else:
         raise Exception('Unknown svg_type', svg_type)
 
