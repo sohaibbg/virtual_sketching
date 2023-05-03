@@ -191,8 +191,8 @@ def convert_strokes_to_svg(data, init_cursor, image_size, infer_lengths, init_wi
     #     write_svg_1(absolute_strokes, image_size, save_path)
     # elif svg_type == 'single':
     write_svg_2(absolute_strokes, image_size, save_path)
-    else:
-        raise Exception('Unknown svg_type', svg_type)
+    # else:
+    #     raise Exception('Unknown svg_type', svg_type)
 
 
 def data_convert_to_absolute(npz_path, svg_type):
