@@ -1,11 +1,11 @@
 import rnn
 import tensorflow as tf
 
-from subnet_tf_utils import generative_cnn_encoder, generative_cnn_encoder_deeper, generative_cnn_encoder_deeper13, \
-    generative_cnn_c3_encoder, generative_cnn_c3_encoder_deeper, generative_cnn_c3_encoder_deeper13, \
-    generative_cnn_c3_encoder_combine33, generative_cnn_c3_encoder_combine43, \
-    generative_cnn_c3_encoder_combine53, generative_cnn_c3_encoder_combineFC, \
-    generative_cnn_c3_encoder_deeper13_attn
+# from subnet_tf_utils import generative_cnn_encoder, generative_cnn_encoder_deeper, generative_cnn_encoder_deeper13, \
+#     generative_cnn_c3_encoder, generative_cnn_c3_encoder_deeper, generative_cnn_c3_encoder_deeper13, \
+#     generative_cnn_c3_encoder_combine33, generative_cnn_c3_encoder_combine43, \
+#     generative_cnn_c3_encoder_combine53, generative_cnn_c3_encoder_combineFC, \
+#     generative_cnn_c3_encoder_deeper13_attn
 
 
 class DiffPastingV3(object):

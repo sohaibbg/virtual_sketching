@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image
 
-from rasterization_utils.RealRenderer import GizehRasterizor as RealRenderer
+# from rasterization_utils.RealRenderer import GizehRasterizor as RealRenderer
 
 
 def copy_hparams(hparams):
