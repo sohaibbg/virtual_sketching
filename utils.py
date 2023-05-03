@@ -21,39 +21,39 @@ def reset_graph():
 
 def load_checkpoint(sess, checkpoint_path, ras_only=False, perceptual_only=False, gen_model_pretrain=False,
                     train_entire=False):
-    if ras_only:
-        load_var = {var.op.name: var for var in tf.compat.v1.global_variables() if 'raster_unit' in var.op.name}
-    elif perceptual_only:
-        load_var = {var.op.name: var for var in tf.compat.v1.global_variables() if 'VGG16' in var.op.name}
-    elif train_entire:
-        load_var = {var.op.name: var for var in tf.compat.v1.global_variables()
-                    if 'discriminator' not in var.op.name
-                    and 'raster_unit' not in var.op.name
-                    and 'VGG16' not in var.op.name
-                    and 'beta1' not in var.op.name
-                    and 'beta2' not in var.op.name
-                    and 'global_step' not in var.op.name
-                    and 'Entire' not in var.op.name
-                    }
-    else:
-        if gen_model_pretrain:
-            load_var = {var.op.name: var for var in tf.compat.v1.global_variables()
-                        if 'discriminator' not in var.op.name
-                        and 'raster_unit' not in var.op.name
-                        and 'VGG16' not in var.op.name
-                        and 'beta1' not in var.op.name
-                        and 'beta2' not in var.op.name
-                        # and 'global_step' not in var.op.name
-                        }
-        else:
-            load_var = tf.compat.v1.global_variables()
+    # if ras_only:
+    #     load_var = {var.op.name: var for var in tf.compat.v1.global_variables() if 'raster_unit' in var.op.name}
+    # elif perceptual_only:
+    #     load_var = {var.op.name: var for var in tf.compat.v1.global_variables() if 'VGG16' in var.op.name}
+    # elif train_entire:
+    #     load_var = {var.op.name: var for var in tf.compat.v1.global_variables()
+    #                 if 'discriminator' not in var.op.name
+    #                 and 'raster_unit' not in var.op.name
+    #                 and 'VGG16' not in var.op.name
+    #                 and 'beta1' not in var.op.name
+    #                 and 'beta2' not in var.op.name
+    #                 and 'global_step' not in var.op.name
+    #                 and 'Entire' not in var.op.name
+    #                 }
+    # else:
+    #     if gen_model_pretrain:
+    load_var = {var.op.name: var for var in tf.compat.v1.global_variables()
+                if 'discriminator' not in var.op.name
+                and 'raster_unit' not in var.op.name
+                and 'VGG16' not in var.op.name
+                and 'beta1' not in var.op.name
+                and 'beta2' not in var.op.name
+                # and 'global_step' not in var.op.name
+                }
+        # else:
+        #     load_var = tf.compat.v1.global_variables()
 
     restorer = tf.compat.v1.train.Saver(load_var)
-    if not ras_only:
-        ckpt = tf.train.get_checkpoint_state(checkpoint_path)
-        model_checkpoint_path = ckpt.model_checkpoint_path
-    else:
-        model_checkpoint_path = checkpoint_path
+    # if not ras_only:
+    ckpt = tf.train.get_checkpoint_state(checkpoint_path)
+    model_checkpoint_path = ckpt.model_checkpoint_path
+    # else:
+    #     model_checkpoint_path = checkpoint_path
     print('Loading model %s' % model_checkpoint_path)
     restorer.restore(sess, model_checkpoint_path)
 
@@ -61,20 +61,20 @@ def load_checkpoint(sess, checkpoint_path, ras_only=False, perceptual_only=False
     return snapshot_step
 
 
-def create_summary(summary_writer, summ_map, step):
-    for summ_key in summ_map:
-        summ_value = summ_map[summ_key]
-        summ = tf.compat.v1.summary.Summary()
-        summ.value.add(tag=summ_key, simple_value=float(summ_value))
-        summary_writer.add_summary(summ, step)
-    summary_writer.flush()
+# def create_summary(summary_writer, summ_map, step):
+#     for summ_key in summ_map:
+#         summ_value = summ_map[summ_key]
+#         summ = tf.compat.v1.summary.Summary()
+#         summ.value.add(tag=summ_key, simple_value=float(summ_value))
+#         summary_writer.add_summary(summ, step)
+#     summary_writer.flush()
 
 
-def save_model(sess, saver, model_save_path, global_step):
-    checkpoint_path = os.path.join(model_save_path, 'p2s')
-    print('saving model %s.' % checkpoint_path)
-    print('global_step %i.' % global_step)
-    saver.save(sess, checkpoint_path, global_step=global_step)
+# def save_model(sess, saver, model_save_path, global_step):
+#     checkpoint_path = os.path.join(model_save_path, 'p2s')
+#     print('saving model %s.' % checkpoint_path)
+#     print('global_step %i.' % global_step)
+#     saver.save(sess, checkpoint_path, global_step=global_step)
 
 
 #############################################
@@ -286,15 +286,15 @@ def draw_strokes(data, save_root, save_filename, input_img, image_size, init_cur
     canvas_img = Image.fromarray(canvas, 'L')
     canvas_img.save(save_path, 'PNG')
 
-    if save_seq:
-        seq_save_root = os.path.join(save_root, 'seq', save_filename[:-4])
-        os.makedirs(seq_save_root, exist_ok=True)
-        for len_i in range(len(frames)):
-            frame = frames[len_i]
-            frame = np.round((1.0 - frame) * 255.0).astype(np.uint8)
-            save_path = os.path.join(seq_save_root, str(len_i) + '.png')
-            frame_img = Image.fromarray(frame, 'L')
-            frame_img.save(save_path, 'PNG')
+    # if save_seq:
+    #     seq_save_root = os.path.join(save_root, 'seq', save_filename[:-4])
+    #     os.makedirs(seq_save_root, exist_ok=True)
+    #     for len_i in range(len(frames)):
+    #         frame = frames[len_i]
+    #         frame = np.round((1.0 - frame) * 255.0).astype(np.uint8)
+    #         save_path = os.path.join(seq_save_root, str(len_i) + '.png')
+    #         frame_img = Image.fromarray(frame, 'L')
+    #         frame_img.save(save_path, 'PNG')
 
     if draw_order:
         order_save_root = os.path.join(save_root, 'order')
