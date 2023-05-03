@@ -305,15 +305,20 @@ def main_testing(test_image_base_dir, test_dataset, test_image_name,
                  round_stop_state_num, stroke_acc_threshold,
                  draw_seq=False, draw_order=False,
                  state_dependent=True):
+    # sets tweaked hyperparameters
     model_params_default = hparams.get_default_hparams_clean()
     model_params = update_hyperparams(model_params_default, model_base_dir, model_name, infer_dataset=test_dataset)
 
+    # 
     [test_set, eval_hps_model, sample_hps_model] \
         = load_dataset_testing(test_image_base_dir, test_dataset, test_image_name, model_params)
 
+    # img name without file extension
     test_image_raw_name = test_image_name[:test_image_name.find('.')]
+    # img path
     model_dir = os.path.join(model_base_dir, model_name)
 
+    # closes session, resets tf graph
     reset_graph()
     sampling_model = VirtualSketchingModel(sample_hps_model)
 
@@ -433,6 +438,7 @@ def main(model_name, test_image_name, sampling_num):
     sampling_base_dir = 'outputs/sampling'
     model_base_dir = 'outputs/snapshot'
 
+    # accuracy and settings
     state_dependent = False
     longer_infer_lens = [500 for _ in range(10)]
     round_stop_state_num = 12

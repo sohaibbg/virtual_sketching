@@ -15,6 +15,7 @@ def copy_hparams(hparams):
 
 
 class GeneralRawDataLoader(object):
+    """gets images in bytes, file, with pointer"""
     def __init__(self,
                  image_path,
                  raster_size,
@@ -36,7 +37,7 @@ class GeneralRawDataLoader(object):
         img = Image.open(image_path).convert('RGB')
         height, width = img.height, img.width
         max_dim = max(height, width)
-
+        # img to array of bytes
         img = np.array(img, dtype=np.uint8)
 
         if height != width:
@@ -59,7 +60,7 @@ class GeneralRawDataLoader(object):
             image_array = np.stack([pad_img_r, pad_img_g, pad_img_b], axis=-1)
         else:
             image_array = img
-
+        # irrelevant
         if self.test_dataset == 'faces' and max_dim != 256:
             image_array_resize = Image.fromarray(image_array, 'RGB')
             image_array_resize = image_array_resize.resize(size=(256, 256), resample=Image.BILINEAR)
@@ -68,6 +69,7 @@ class GeneralRawDataLoader(object):
         assert image_array.shape[0] == image_array.shape[1]
         img_size = image_array.shape[0]
         image_array = image_array.astype(np.float32)
+        # clean line drawings have white padding, others, black
         if self.test_dataset == 'clean_line_drawings':
             image_array = image_array[:, :, 0] / 255.0  # [0.0-stroke, 1.0-BG]
         else:
@@ -130,12 +132,14 @@ class GeneralRawDataLoader(object):
 
         return init_cursor_batch
 
-
 def load_dataset_testing(test_data_base_dir, test_dataset, test_img_name, model_params):
+    """args: folder1 as arg1/folder2 as arg2/img as arg3"""
+    # folder 2 can only be named 1 of 3 options based on available models
     assert test_dataset in ['clean_line_drawings', 'rough_sketches', 'faces']
     img_path = os.path.join(test_data_base_dir, test_dataset, test_img_name)
     print('Loaded {} from {}'.format(img_path, test_dataset))
 
+    # hyperparameter tuning
     eval_model_params = copy_hparams(model_params)
     eval_model_params.use_input_dropout = 0
     eval_model_params.use_recurrent_dropout = 0
@@ -143,6 +147,7 @@ def load_dataset_testing(test_data_base_dir, test_dataset, test_img_name, model_
     eval_model_params.batch_size = 1
     eval_model_params.model_mode = 'sample'
 
+    # hyperparameter tuning
     sample_model_params = copy_hparams(eval_model_params)
     sample_model_params.batch_size = 1  # only sample one at a time
     sample_model_params.max_seq_len = 1  # sample one point at a time
