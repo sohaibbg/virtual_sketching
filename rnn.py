@@ -31,14 +31,14 @@ def orthogonal(shape):
     return q.reshape(shape)
 
 
-def orthogonal_initializer(scale=1.0):
-    """Orthogonal initializer."""
+# def orthogonal_initializer(scale=1.0):
+#     """Orthogonal initializer."""
 
-    def _initializer(shape, dtype=tf.float32,
-                     partition_info=None):  # pylint: disable=unused-argument
-        return tf.constant(orthogonal(shape) * scale, dtype)
+#     def _initializer(shape, dtype=tf.float32,
+#                      partition_info=None):  # pylint: disable=unused-argument
+#         return tf.constant(orthogonal(shape) * scale, dtype)
 
-    return _initializer
+#     return _initializer
 
 
 def lstm_ortho_initializer(scale=1.0):
@@ -58,69 +58,69 @@ def lstm_ortho_initializer(scale=1.0):
     return _initializer
 
 
-class LSTMCell(tf.compat.v1.nn.rnn_cell.RNNCell):
-    """Vanilla LSTM cell.
+# class LSTMCell(tf.compat.v1.nn.rnn_cell.RNNCell):
+#     """Vanilla LSTM cell.
 
-  Uses ortho initializer, and also recurrent dropout without memory loss
-  (https://arxiv.org/abs/1603.05118)
-  """
+#   Uses ortho initializer, and also recurrent dropout without memory loss
+#   (https://arxiv.org/abs/1603.05118)
+#   """
 
-    def __init__(self,
-                 num_units,
-                 forget_bias=1.0,
-                 use_recurrent_dropout=False,
-                 dropout_keep_prob=0.9):
-        self.num_units = num_units
-        self.forget_bias = forget_bias
-        self.use_recurrent_dropout = use_recurrent_dropout
-        self.dropout_keep_prob = dropout_keep_prob
+#     def __init__(self,
+#                  num_units,
+#                  forget_bias=1.0,
+#                  use_recurrent_dropout=False,
+#                  dropout_keep_prob=0.9):
+    #     self.num_units = num_units
+    #     self.forget_bias = forget_bias
+    #     self.use_recurrent_dropout = use_recurrent_dropout
+    #     self.dropout_keep_prob = dropout_keep_prob
 
-    @property
-    def state_size(self):
-        return 2 * self.num_units
+    # @property
+    # def state_size(self):
+    #     return 2 * self.num_units
 
-    @property
-    def output_size(self):
-        return self.num_units
+    # @property
+    # def output_size(self):
+    #     return self.num_units
 
-    def get_output(self, state):
-        unused_c, h = tf.split(state, 2, 1)
-        return h
+    # def get_output(self, state):
+    #     unused_c, h = tf.split(state, 2, 1)
+    #     return h
 
-    def __call__(self, x, state, scope=None):
-        with tf.compat.v1.variable_scope(scope or type(self).__name__):
-            c, h = tf.split(state, 2, 1)
+    # def __call__(self, x, state, scope=None):
+    #     with tf.compat.v1.variable_scope(scope or type(self).__name__):
+    #         c, h = tf.split(state, 2, 1)
 
-            x_size = x.get_shape().as_list()[1]
+    #         x_size = x.get_shape().as_list()[1]
 
-            w_init = None  # uniform
+    #         w_init = None  # uniform
 
-            h_init = lstm_ortho_initializer(1.0)
+    #         h_init = lstm_ortho_initializer(1.0)
 
-            # Keep W_xh and W_hh separate here as well to use different init methods.
-            w_xh = tf.compat.v1.get_variable(
-                'W_xh', [x_size, 4 * self.num_units], initializer=w_init)
-            w_hh = tf.compat.v1.get_variable(
-                'W_hh', [self.num_units, 4 * self.num_units], initializer=h_init)
-            bias = tf.compat.v1.get_variable(
-                'bias', [4 * self.num_units],
-                initializer=tf.compat.v1.constant_initializer(0.0))
+    #         # Keep W_xh and W_hh separate here as well to use different init methods.
+    #         w_xh = tf.compat.v1.get_variable(
+    #             'W_xh', [x_size, 4 * self.num_units], initializer=w_init)
+    #         w_hh = tf.compat.v1.get_variable(
+    #             'W_hh', [self.num_units, 4 * self.num_units], initializer=h_init)
+    #         bias = tf.compat.v1.get_variable(
+    #             'bias', [4 * self.num_units],
+    #             initializer=tf.compat.v1.constant_initializer(0.0))
 
-            concat = tf.concat([x, h], 1)
-            w_full = tf.concat([w_xh, w_hh], 0)
-            hidden = tf.matmul(concat, w_full) + bias
+    #         concat = tf.concat([x, h], 1)
+    #         w_full = tf.concat([w_xh, w_hh], 0)
+    #         hidden = tf.matmul(concat, w_full) + bias
 
-            i, j, f, o = tf.split(hidden, 4, 1)
+    #         i, j, f, o = tf.split(hidden, 4, 1)
 
-            if self.use_recurrent_dropout:
-                g = tf.nn.dropout(tf.tanh(j), rate=1 - (self.dropout_keep_prob))
-            else:
-                g = tf.tanh(j)
+    #         if self.use_recurrent_dropout:
+    #             g = tf.nn.dropout(tf.tanh(j), rate=1 - (self.dropout_keep_prob))
+    #         else:
+    #             g = tf.tanh(j)
 
-            new_c = c * tf.sigmoid(f + self.forget_bias) + tf.sigmoid(i) * g
-            new_h = tf.tanh(new_c) * tf.sigmoid(o)
+    #         new_c = c * tf.sigmoid(f + self.forget_bias) + tf.sigmoid(i) * g
+    #         new_h = tf.tanh(new_c) * tf.sigmoid(o)
 
-            return new_h, tf.concat([new_c, new_h], 1)  # fuk tuples.
+    #         return new_h, tf.concat([new_c, new_h], 1)  # fuk tuples.
 
 
 def layer_norm_all(h,
@@ -185,13 +185,13 @@ def layer_norm(x,
     return output
 
 
-def raw_layer_norm(x, epsilon=1e-3):
-    axes = [1]
-    mean = tf.reduce_mean(input_tensor=x, axis=axes, keepdims=True)
-    std = tf.sqrt(
-        tf.reduce_mean(input_tensor=tf.square(x - mean), axis=axes, keepdims=True) + epsilon)
-    output = (x - mean) / (std)
-    return output
+# def raw_layer_norm(x, epsilon=1e-3):
+#     axes = [1]
+#     mean = tf.reduce_mean(input_tensor=x, axis=axes, keepdims=True)
+#     std = tf.sqrt(
+#         tf.reduce_mean(input_tensor=tf.square(x - mean), axis=axes, keepdims=True) + epsilon)
+#     output = (x - mean) / (std)
+#     return output
 
 
 def super_linear(x,
