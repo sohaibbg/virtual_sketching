@@ -6,6 +6,7 @@ import tensorflow as tf
 #     generative_cnn_c3_encoder_combine33, generative_cnn_c3_encoder_combine43, \
 #     generative_cnn_c3_encoder_combine53, generative_cnn_c3_encoder_combineFC, \
 #     generative_cnn_c3_encoder_deeper13_attn
+from subnet_tf_utils import generative_cnn_c3_encoder_deeper13
 
 
 class DiffPastingV3(object):
@@ -290,22 +291,22 @@ class VirtualSketchingModel(object):
                 raise Exception('Unknown encoder_type', self.hps.encoder_type)
         else:
             with tf.compat.v1.variable_scope('Combined_Encoder', reuse=tf.compat.v1.AUTO_REUSE):
-                if self.hps.encoder_type == 'conv10':
-                    image_embedding, _ = generative_cnn_encoder(batch_input_combined, is_training, dropout_keep_prob)  # (N, 128)
-                elif self.hps.encoder_type == 'conv10_deep':
-                    image_embedding, _ = generative_cnn_encoder_deeper(batch_input_combined, is_training, dropout_keep_prob)  # (N, 512)
-                elif self.hps.encoder_type == 'conv13':
-                    image_embedding, _ = generative_cnn_encoder_deeper13(batch_input_combined, is_training, dropout_keep_prob)  # (N, 128)
-                elif self.hps.encoder_type == 'conv10_c3':
-                    image_embedding, _ = generative_cnn_c3_encoder(batch_input_combined, is_training, dropout_keep_prob)  # (N, 128)
-                elif self.hps.encoder_type == 'conv10_deep_c3':
-                    image_embedding, _ = generative_cnn_c3_encoder_deeper(batch_input_combined, is_training, dropout_keep_prob)  # (N, 512)
-                elif self.hps.encoder_type == 'conv13_c3':
-                    image_embedding, _ = generative_cnn_c3_encoder_deeper13(batch_input_combined, is_training, dropout_keep_prob)  # (N, 128)
-                elif self.hps.encoder_type == 'conv13_c3_attn':
-                    image_embedding, _ = generative_cnn_c3_encoder_deeper13_attn(batch_input_combined, is_training, dropout_keep_prob)  # (N, 128)
-                else:
-                    raise Exception('Unknown encoder_type', self.hps.encoder_type)
+                # if self.hps.encoder_type == 'conv10':
+                #     image_embedding, _ = generative_cnn_encoder(batch_input_combined, is_training, dropout_keep_prob)  # (N, 128)
+                # elif self.hps.encoder_type == 'conv10_deep':
+                #     image_embedding, _ = generative_cnn_encoder_deeper(batch_input_combined, is_training, dropout_keep_prob)  # (N, 512)
+                # elif self.hps.encoder_type == 'conv13':
+                #     image_embedding, _ = generative_cnn_encoder_deeper13(batch_input_combined, is_training, dropout_keep_prob)  # (N, 128)
+                # elif self.hps.encoder_type == 'conv10_c3':
+                #     image_embedding, _ = generative_cnn_c3_encoder(batch_input_combined, is_training, dropout_keep_prob)  # (N, 128)
+                # elif self.hps.encoder_type == 'conv10_deep_c3':
+                #     image_embedding, _ = generative_cnn_c3_encoder_deeper(batch_input_combined, is_training, dropout_keep_prob)  # (N, 512)
+                # elif self.hps.encoder_type == 'conv13_c3':
+                image_embedding, _ = generative_cnn_c3_encoder_deeper13(batch_input_combined, is_training, dropout_keep_prob)  # (N, 128)
+                # elif self.hps.encoder_type == 'conv13_c3_attn':
+                #     image_embedding, _ = generative_cnn_c3_encoder_deeper13_attn(batch_input_combined, is_training, dropout_keep_prob)  # (N, 128)
+                # else:
+                #     raise Exception('Unknown encoder_type', self.hps.encoder_type)
         return image_embedding
 
     def build_seq_decoder(self, dec_cell, actual_input_x, initial_state):
