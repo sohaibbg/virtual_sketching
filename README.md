@@ -7,19 +7,24 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.12.0-Linux-x86_64.sh
 ###### set permissions
 chmod +x Miniconda3-py38_4.12.0-Linux-x86_64.sh
 ###### installation
-./Miniconda3-py38_4.12.0-Linux-x86_64.sh -b -f -p /usr/local
+sudo ./Miniconda3-py38_4.12.0-Linux-x86_64.sh -b -f -p /usr/local
 conda update conda
 conda create -n myenv python=3.6
 ###### enable access to conda packages
-python import sys
-python sys.path.append('/usr/local/lib/python3.8/site-packages')
+python
+import sys
+sys.path.append('/usr/local/lib/python3.8/site-packages')
+exit()
 ###### install dependencies
+exit
+<!-- reopen bash -->
+conda init
 conda activate myenv
 pip install tensorflow==1.15
-pip install ipykernel utils matplotlib opencv-python==3.4.2.17 pillow==6.2.0 scipy==1.5.2 gizeh==0.1.11
+  pip install ipykernel utils matplotlib opencv-python==3.4.2.17 pillow==6.2.0 scipy==1.5.2 gizeh==0.1.11
 ##### 2. Download and extract the model
-###### download the following file
-https://drive.google.com/file/d/1QotAuGFxDJ9eisxacg5-cJSf4oXP2C-q/view?usp=sharing
+pip install gdown
+gdown https://drive.google.com/uc?id=1QotAuGFxDJ9eisxacg5-cJSf4oXP2C-q
 ###### extract it
 virtual_sketching/outputs/snapshot/pretrain_clean_line_drawings
 Extraction should be such that "pretrain_clean_line_drawings" will contain 4 files

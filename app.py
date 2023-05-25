@@ -20,7 +20,7 @@ def upload():
     filenameNoType = os.path.splitext(filenameNoType)[0]
     data_convert_to_absolute(f"outputs/sampling/clean_line_drawings__pretrain_clean_line_drawings/seq_data/{filenameNoType}_0.npz","single")
     # read svg into string
-    resultpath = os.path.join("outputs","sampling","clean_line_drawings__pretrain_clean_line_drawings","seq_data","duck_0","single.svg")
+    resultpath = os.path.join("outputs","sampling","clean_line_drawings__pretrain_clean_line_drawings","seq_data",f"{filenameNoType}_0","single.svg")
     lines = ""
     with open(resultpath) as f:
         lines = f.read()
